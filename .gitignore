@@ -13,7 +13,7 @@ coverage/
 # they are committed. Only scratch files are ignored.
 output/**/*.tmp
 
-docs
+/docs/
 # Evaluator-only spec copy: never commit
 csvFiles/*.docx
 
