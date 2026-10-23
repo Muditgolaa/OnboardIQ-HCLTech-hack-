@@ -65,7 +65,7 @@ Legend: **PASS** (test evidence) · **PARTIAL** (part verified, rest stated) · 
 | AI-2 field extraction (≥ 90 % overall, ≥ 98 % PAN/Aadhaar-4/DOB clean), regex-only comparison | PASS | "meets the AI-2 reference targets…"; 99.5 % overall vs 83.2 % regex-only |
 | AI-3 "ai" provider behind FR-3; uploads classified and decided; 10 s timeout → confidence 0 → REVIEW; output files | PASS | `documents.test.ts` "a provider that throws, or hangs past the timeout, degrades the same way"; `extraction_output.csv`, `ai_decisions_output.csv` validated |
 | AI-4 calibration and labelled feedback (SHOULD) | PARTIAL | Precision of fields accepted at ≥ 0.80: **100.0 % (742/742)**; sent to review 25 (88 % of those were in fact correct). Officer corrections are stored as labelled rows (`field_corrections`, source OFFICER) — tested in `lifecycle.test.ts`. The **officer correction rate is not measured**: the supplied data has no officer feedback on AI-extracted fields |
-| AI-5 reviewer summary (MAY) | PARTIAL | Implemented in this QA round (section 9). Guardrails PASS with a fake model: `review-summary.test.ts` (7), `ai-summary-openapi.test.ts` (5): ≤ 80 words, no decision wording, every quoted value must be in the case, applicants 403, labelled "AI-generated", 503 when off. **Not run against a live LLM** (no API key used in this QA) |
+| AI-5 reviewer summary (MAY) | PASS (guardrails) | Implemented in this QA round (section 9). Live Groq spot check passed (section 11). Guardrails PASS with a fake model: `review-summary.test.ts` (7), `ai-summary-openapi.test.ts` (5): ≤ 80 words, no decision wording, every quoted value must be in the case, applicants 403, labelled "AI-generated", 503 when off. |
 | Human oversight, explainability, uncertain output, fallback | PASS | maker-checker tests above; trace with compared values (`rules.test.ts` "the trace records the values compared for every rule"); R3 skip tests; fallback tests |
 | Privacy (no full Aadhaar, LLM off by default, no PII in logs) | PASS | `redact.test.ts`; `auth.test.ts` "never writes passwords or tokens to the request log"; `authorization.test.ts` "never writes document text to the request log" |
 | Prompt injection | PASS | `documents.test.ts` "the supplied injection document (D3000486) is OTHER, changes no decision", "uploading the injection text as a new document… approves nothing"; `ai-extraction.test.ts` "instructions hidden inside an otherwise normal document are never followed"; `llm.test.ts` delimiters + strict schema |
@@ -255,10 +255,11 @@ npm run batch                   # decisions_output.csv without a database
 
 Unmet or unverified (nothing else is open):
 
-1. **AI-5 with a live LLM: NOT TESTED.** Guardrails are tested with a fake model; set `REVIEW_SUMMARY_LLM=groq`
-   (or `anthropic`) and the matching key to run it.
-2. **LLM extraction path: NOT TESTED live**; its latency against the 10-second target is not measured (the
-   timeout itself is tested).
+1. **Live LLM: spot-checked once, not evaluated.** With Groq `openai/gpt-oss-120b`: the AI-5 summary of worked
+   example 9 passed every guardrail (45 words, values from the case, no decision wording, 1.9 s), and LLM-assisted
+   extraction of the poor PAN scan D3000025 read `ZZTPS9012Y` at confidence 0.95 in 0.9 s (target 10 s). One
+   sample each: no accuracy is claimed for the LLM path, and the evaluation report figures remain LLM-free.
+2. **LLM extraction is off by default** (`EXTRACTION_LLM` unset, `EXTRACTION_PROVIDER=mock` for the graded outputs).
 3. **AI-4 officer correction rate: not measurable** with the supplied data (no officer feedback on AI-extracted
    fields); storage of corrections as labelled feedback is tested.
 4. **`/code` packaging (decided: keep):** the source lives in `backend/` and `frontend/` at the repository root

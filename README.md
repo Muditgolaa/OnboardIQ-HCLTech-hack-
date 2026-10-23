@@ -270,7 +270,7 @@ LLMs are optional and off by default. To use Groq, add to `.env` and restart the
 GROQ_API_KEY=gsk_...             # from console.groq.com
 REVIEW_SUMMARY_LLM=groq          # AI-5 discrepancy summary on REVIEW cases
 EXTRACTION_LLM=groq              # optional: LLM help for EXTRACTION_PROVIDER=ai
-GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_MODEL=openai/gpt-oss-120b
 ```
 
 The start-up line shows which LLM each feature uses. The AI never decides: summaries and extraction proposals are

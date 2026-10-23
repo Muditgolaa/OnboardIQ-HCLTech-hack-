@@ -11,7 +11,7 @@ describe('Groq client', () => {
     let sent: { url: string; init: RequestInit } | undefined;
     const client = createGroqClient({
       apiKey: 'gsk_test_key_0123456789abcdef',
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       fetchImpl: ((url: string, init: RequestInit) => {
         sent = { url, init };
         return ok({
@@ -40,7 +40,7 @@ describe('Groq client', () => {
     );
     const body = JSON.parse(sent?.init.body as string);
     expect(body).toMatchObject({
-      model: 'llama-3.3-70b-versatile',
+      model: 'openai/gpt-oss-120b',
       temperature: 0,
       tool_choice: { type: 'function', function: { name: 'record_summary' } },
     });
@@ -89,14 +89,14 @@ describe('LLM configuration', () => {
     expect(() => parseEnv({ ...base, REVIEW_SUMMARY_LLM: 'groq' })).toThrow(/GROQ_API_KEY/);
     expect(
       parseEnv({ ...base, REVIEW_SUMMARY_LLM: 'groq', GROQ_API_KEY: 'g'.repeat(24) }).GROQ_MODEL,
-    ).toBe('llama-3.3-70b-versatile');
+    ).toBe('openai/gpt-oss-120b');
   });
   it('builds the right client, or none when off or the key is missing', () => {
     const env = {
       ANTHROPIC_API_KEY: undefined,
       EXTRACTION_LLM_MODEL: 'claude-haiku-5-5',
       GROQ_API_KEY: 'g'.repeat(24),
-      GROQ_MODEL: 'llama-3.3-70b-versatile',
+      GROQ_MODEL: 'openai/gpt-oss-120b',
     };
     expect(createLlmClient('groq', env)?.name).toBe('groq');
     expect(createLlmClient('none', env)).toBeUndefined();

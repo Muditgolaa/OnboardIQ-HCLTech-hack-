@@ -53,7 +53,7 @@ const envSchema = z
       .default('none'),
     // Groq (OpenAI-compatible API) as an alternative LLM provider for either feature.
     GROQ_API_KEY: z.string().min(20, 'looks too short to be an API key').optional(),
-    GROQ_MODEL: z.string().min(1).default('llama-3.3-70b-versatile'),
+    GROQ_MODEL: z.string().min(1).default('openai/gpt-oss-120b'),
     // FR-3: provider is chosen by configuration, not code.
     EXTRACTION_PROVIDER: z
       .enum(['mock', 'ai'], { error: 'must be "mock" or "ai"' })
