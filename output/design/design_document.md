@@ -111,7 +111,7 @@ routes validate with. While the API runs, Swagger UI is at `/api/docs`. Errors a
   Passwords: scrypt with per-user salt. After five failed logins, further attempts are refused (429) for 15 minutes.
 - Aadhaar: only the last 4 digits are accepted, stored (database check constraint) and shown. PAN masked
   (`ZZKXXXXX4Q`) in lists, logs and exports; the full PAN only on the case screen for staff.
-- Uploads: `.txt`, UTF-8, at most 1 MB, at least 3 files on first submission, SHA-256 stored, unique per
+- Uploads: `.txt` (UTF-8) or text-based PDF (text layer extracted with pdf.js; scans refused, 10 pages max), at most 1 MB, at least 3 files on first submission, SHA-256 stored, unique per
   application. Files are stored outside the web root (permissions 0600), never executed, and served only through
   authorised routes; any other caller gets 404, and every view is audited.
 - Audit: append-only table (a database trigger blocks UPDATE and DELETE) with status changes, decisions,

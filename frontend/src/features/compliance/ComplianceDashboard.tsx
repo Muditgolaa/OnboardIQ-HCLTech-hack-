@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { EmptyState, ErrorState, LoadingState } from '@/components/common/States';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { SystemStatus } from '@/features/system-status/SystemStatus';
 import { useAsync } from '@/hooks/useAsync';
@@ -136,9 +136,9 @@ export function ComplianceDashboard() {
               >
                 <Stat
                   testId="stat-total"
-                  label="Applications"
+                  label="Submitted in total"
                   value={d.total_applications}
-                  hint={`${d.decided.count} decided by the rules`}
+                  hint={`${d.decided.count} processed by the rules · ${d.by_status.SUBMITTED} waiting`}
                 />
                 <Stat
                   testId="stat-stp"
@@ -175,6 +175,10 @@ export function ComplianceDashboard() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Applications by status</CardTitle>
+                    <CardDescription>
+                      Where each application is now. Every application was submitted;
+                      &ldquo;Submitted&rdquo; counts only those still waiting to be processed.
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ul className="grid gap-2" aria-label="Applications by status">

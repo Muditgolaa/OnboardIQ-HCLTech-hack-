@@ -13,6 +13,7 @@ import { actorOf, recordAudit } from '../audit/audit.js';
 import { requireRole } from '../auth/guards.js';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import type { ApplicationsService } from '../applications/applications.service.js';
 import type { DashboardService } from './dashboard.service.js';
 import type { MaintenanceService } from '../workflow/maintenance.service.js';
 import type { ProcessingService } from '../workflow/processing.service.js';
@@ -39,6 +40,7 @@ const pepBody = z.strictObject({
 });
 
 export interface AdminOps {
+  applications: ApplicationsService;
   maintenance: MaintenanceService;
   processing: ProcessingService;
   dashboard: DashboardService;
@@ -257,6 +259,11 @@ export function adminRouter(
   // list customers whose re-KYC is due.
   router.post('/rescreen', async (req, res) => {
     res.json(await ops.maintenance.rescreenOpenCases(callerOf(req)));
+  });
+
+  // Compliance Officers can find any application, including final and rejected ones (officers see only their queue).
+  router.get('/applications', async (_req, res) => {
+    res.json({ applications: await ops.applications.all() });
   });
 
   router.post('/process-received', async (req, res) => {

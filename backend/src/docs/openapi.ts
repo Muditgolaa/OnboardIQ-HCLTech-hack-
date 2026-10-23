@@ -352,6 +352,15 @@ export const OPERATIONS: Op[] = [
     errors: [401, 403],
   },
   {
+    method: 'get',
+    path: '/api/v1/admin/applications',
+    tag: 'Compliance',
+    summary: 'All applications with status, rules decision, risk and reason codes (masked PAN)',
+    who: 'COMPLIANCE_OFFICER',
+    ok: 200,
+    errors: [401, 403],
+  },
+  {
     method: 'post',
     path: '/api/v1/admin/process-received',
     tag: 'Compliance',

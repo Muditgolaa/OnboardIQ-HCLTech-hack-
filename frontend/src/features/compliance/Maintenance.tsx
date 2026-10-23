@@ -16,7 +16,7 @@ import {
   type RescreenResult,
   type RuleConfig,
 } from '@/api/client';
-import { ApiError } from '@/api/http';
+import { actionMessage } from '@/lib/errors';
 import { DataTable, type Column } from '@/components/common/DataTable';
 import { Field } from '@/components/common/Field';
 import { PageHeader } from '@/components/common/PageHeader';
@@ -30,12 +30,7 @@ import { useAsync } from '@/hooks/useAsync';
 import { formatDate, formatDateTime, humanize } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
-const message = (err: unknown) =>
-  err instanceof ApiError
-    ? err.fields.length
-      ? err.fields.map((f) => `${f.field}: ${f.message}`).join(' ')
-      : err.message
-    : 'Could not reach the server.';
+const message = actionMessage;
 
 // Numeric settings that can be edited here; lists and patterns are shown read-only.
 const NUMBERS: { key: string; label: string; step: string }[] = [

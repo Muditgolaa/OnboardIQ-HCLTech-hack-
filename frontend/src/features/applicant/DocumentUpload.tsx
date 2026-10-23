@@ -7,6 +7,7 @@ import {
   uploadDocuments,
 } from '@/api/client';
 import { ApiError } from '@/api/http';
+import { actionMessage } from '@/lib/errors';
 import type { UploadedDocument } from '@/api/types';
 import { PageHeader } from '@/components/common/PageHeader';
 import { StatusBadge } from '@/components/common/StatusBadge';
@@ -47,7 +48,7 @@ const guessType = (name: string): string => {
 };
 
 function problemWith(file: File): string | null {
-  if (!/\.txt$/i.test(file.name)) return 'Only .txt files are accepted.';
+  if (!/\.(txt|pdf)$/i.test(file.name)) return 'Only .txt files and text-based PDFs are accepted.';
   if (file.size > MAX_BYTES) return `This file is ${formatBytes(file.size)}; the limit is 1 MB.`;
   if (file.size === 0) return 'This file is empty.';
   return null;
@@ -115,7 +116,7 @@ export function DocumentUpload() {
         }
         setServerProblems(byIndex);
         setFormProblem(general.length ? general.join(' ') : err.message);
-      } else setFormProblem(err instanceof ApiError ? err.message : 'Could not reach the server.');
+      } else setFormProblem(actionMessage(err));
       toast.error('The documents were not uploaded.');
     } finally {
       setBusy(null);
@@ -135,7 +136,7 @@ export function DocumentUpload() {
       );
       void navigate(`/applications/${result.application_id}`);
     } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : 'Could not reach the server.');
+      toast.error(actionMessage(err));
       setBusy(null);
       app.reload();
     }
@@ -147,7 +148,7 @@ export function DocumentUpload() {
       <PageHeader
         eyebrow={`Application ${a.application_id}`}
         title={resubmitting ? 'Upload new documents' : 'Upload your documents'}
-        description="Upload plain-text (.txt) copies of your PAN card, Aadhaar card and an address proof (electricity bill, bank statement or driving licence)."
+        description="Upload your PAN card, Aadhaar card and an address proof (electricity bill, bank statement or driving licence) as .txt files or text-based PDFs."
         actions={<StatusBadge status={a.status} />}
       />
       {!canUpload && (
@@ -180,7 +181,8 @@ export function DocumentUpload() {
                 {firstUpload
                   ? 'Your first submission needs at least 3 files: PAN, Aadhaar and an address proof. '
                   : ''}
-                Each file must be .txt, UTF-8 and at most 1 MB. Choose a document type for each.
+                Each file must be a .txt (UTF-8) or a PDF with selectable text (not a photo or
+                scan), at most 1 MB and 10 pages. Choose a document type for each.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -189,16 +191,16 @@ export function DocumentUpload() {
                   ref={input}
                   id="files"
                   type="file"
-                  accept=".txt,text/plain"
+                  accept=".txt,.pdf,text/plain,application/pdf"
                   multiple
                   className="sr-only"
                   onChange={onPick}
                 />
                 <Button type="button" variant="outline" onClick={() => input.current?.click()}>
-                  Choose .txt files
+                  Choose files
                 </Button>
                 <label htmlFor="files" className="sr-only">
-                  Choose .txt files
+                  Choose files
                 </label>
               </div>
               {formProblem && <Alert tone="danger">{formProblem}</Alert>}

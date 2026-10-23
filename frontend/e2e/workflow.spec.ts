@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { makePdf } from './pdf';
 
 // Fixed test password of the throw-away e2e database (see backend/src/cli/e2e-server.ts).
 const PASSWORD = 'E2e-Test-Passw0rd!';
@@ -53,10 +54,18 @@ test('a new applicant fills the form, uploads three documents and submits', asyn
   await page.getByRole('button', { name: 'Continue to documents' }).click();
 
   await expect(page.getByRole('heading', { name: 'Upload your documents' })).toBeVisible();
-  const files = ['pan.txt', 'aadhaar.txt', 'electricity-bill.txt'].map((name) => ({
-    ...text([`Sample ${name}`, 'Neha Kapoor']),
-    name,
-  }));
+  // The PAN card is a text-based PDF: its text layer is extracted on the server like a .txt document.
+  const files = [
+    {
+      name: 'pan.pdf',
+      mimeType: 'application/pdf',
+      buffer: makePdf([['INCOME TAX DEPARTMENT', 'Permanent Account Number Card', 'Neha Kapoor']]),
+    },
+    ...['aadhaar.txt', 'electricity-bill.txt'].map((name) => ({
+      ...text([`Sample ${name}`, 'Neha Kapoor']),
+      name,
+    })),
+  ];
   await page.locator('#files').setInputFiles(files);
   await expect(
     page.getByRole('list', { name: 'Files to upload' }).getByRole('listitem'),

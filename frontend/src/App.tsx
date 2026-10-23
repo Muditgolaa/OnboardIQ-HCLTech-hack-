@@ -10,6 +10,7 @@ import { LoginPage } from '@/features/auth/LoginPage';
 import { RegisterPage } from '@/features/auth/RegisterPage';
 import { Maintenance } from '@/features/compliance/Maintenance';
 import { useAuth } from '@/features/auth/useAuth';
+import { AllApplications } from '@/features/compliance/AllApplications';
 import { AuditViewer } from '@/features/compliance/AuditViewer';
 import { ComplianceDashboard } from '@/features/compliance/ComplianceDashboard';
 import { CaseReview } from '@/features/review/CaseReview';
@@ -133,6 +134,14 @@ export function App() {
           element={
             <Guard roles={COMPLIANCE}>
               <ComplianceDashboard />
+            </Guard>
+          }
+        />
+        <Route
+          path="/all-applications"
+          element={
+            <Guard roles={COMPLIANCE}>
+              <AllApplications />
             </Guard>
           }
         />

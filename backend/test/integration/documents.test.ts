@@ -8,6 +8,7 @@ import type { ExtractionProvider } from '../../src/modules/extraction/provider.j
 import { describeDb, testPrisma, truncateAll } from '../support/db.js';
 import { bearer, buildApp, SERVICE_KEY, type TestApp } from '../support/http.js';
 import { loadRealWorld, mockRows, realText, type Who } from '../support/real-data.js';
+import { makePdf } from '../support/pdf.js';
 import { PASSWORD } from '../support/world.js';
 
 const sha = (text: string) => createHash('sha256').update(text, 'utf8').digest('hex');
@@ -562,6 +563,83 @@ describeDb('document upload and extraction (real supplied data)', () => {
       );
       expect(new Set(kinds)).toEqual(new Set(['DOCUMENT_UPLOADED', 'EXTRACTION_RECORDED']));
       expect(await prisma.checkerDecision.count()).toBe(0);
+    });
+  });
+
+  describe('PDF upload (text-based PDFs; spec bonus)', () => {
+    const panText = realText('D3000001');
+    const panPdf = makePdf([panText.split('\n')]);
+    const pdfPart: Part = {
+      name: 'pan.pdf',
+      content: panPdf,
+      mime: 'application/pdf',
+      type: 'PAN_CARD',
+    };
+
+    it('stores the PDF as a document whose text is the PDF text layer, hashed on the PDF bytes, and de-duplicates it', async () => {
+      const appId = await newApplication();
+      const tok = await token('applicantA');
+      const res = await upload(appId, [pdfPart, ...threeRealDocs.slice(1)], tok);
+      expect(res.status).toBe(201);
+      const pan = res.body.documents[0] as {
+        doc_id: string;
+        file_name: string;
+        sha256: string;
+        size_bytes: number;
+      };
+      expect(pan.file_name).toBe(`${pan.doc_id}.pdf`);
+      expect(pan.size_bytes).toBe(panPdf.length);
+      expect(pan.sha256).toBe(createHash('sha256').update(panPdf).digest('hex'));
+      const row = await prisma.document.findUniqueOrThrow({ where: { doc_id: pan.doc_id } });
+      for (const line of panText.split('\n').filter((l) => l.trim()))
+        expect(row.text).toContain(line.trim());
+      const view = await request(t.app)
+        .get(`/api/v1/applications/${appId}/documents/${pan.doc_id}`)
+        .set(bearer(tok));
+      expect(view.status).toBe(200);
+      expect(view.body.text).toBe(row.text);
+      const again = await upload(appId, [pdfPart], tok);
+      expect(again.body.documents[0]).toMatchObject({ doc_id: pan.doc_id, duplicate: true });
+      const audit = await prisma.auditEvent.findFirstOrThrow({
+        where: { doc_id: pan.doc_id, event_type: 'DOCUMENT_UPLOADED' },
+      });
+      expect(audit.details).toMatchObject({ source_format: 'pdf', pdf_pages: 1 });
+    });
+
+    it('the AI provider classifies and reads the PDF text like any document', async () => {
+      const appId = await newApplication();
+      const res = await upload(
+        appId,
+        [pdfPart, ...threeRealDocs.slice(1)],
+        await token('applicantA'),
+      );
+      const docId = (res.body.documents[0] as { doc_id: string }).doc_id;
+      const aiApp = buildApp(prisma, { extractionKind: 'ai' });
+      const out = await request(aiApp.app)
+        .post(`/api/v1/documents/${docId}/extract`)
+        .set('x-service-key', SERVICE_KEY);
+      expect(out.status).toBe(200);
+      expect(out.body.doc_type).toBe('PAN_CARD');
+      expect(out.body.doc_type_confidence).toBeGreaterThanOrEqual(0.8);
+      expect((out.body.fields as { field_name: string }[]).map((f) => f.field_name)).toContain(
+        'pan_number',
+      );
+    });
+
+    it('refuses a scanned PDF (no text layer) and a fake PDF with 422, storing nothing', async () => {
+      const appId = await newApplication();
+      const res = await upload(
+        appId,
+        [
+          { name: 'scan.pdf', content: makePdf([[]]), mime: 'application/pdf', type: 'PAN_CARD' },
+          ...threeRealDocs.slice(1),
+        ],
+        await token('applicantA'),
+      );
+      expect(res.status).toBe(422);
+      expect(res.body.error).toBe('PDF_NO_TEXT');
+      expect(res.body.fields[0].message).toMatch(/looks like a scan/);
+      expect(await prisma.document.count({ where: { application_id: appId } })).toBe(0);
     });
   });
 });

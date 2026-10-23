@@ -65,7 +65,7 @@ export function createUploadService(
     // Documents added while a resubmission is requested belong to the next round and supersede earlier ones.
     const round =
       app.status === 'RESUBMISSION_REQUESTED' ? app.submission_round + 1 : app.submission_round;
-    const checked = checkAll(files);
+    const checked = await checkAll(files);
     const existing = await prisma.document.findMany({
       where: { application_id: app.application_id },
     });
@@ -98,10 +98,10 @@ export function createUploadService(
       fresh.push({ docId, index: i });
       results[i] = {
         doc_id: docId,
-        file_name: `${docId}.txt`,
+        file_name: `${docId}.${file.format}`,
         declared_doc_type: declaredTypes[i] as string,
         sha256: file.sha256,
-        size_bytes: file.bytes.length,
+        size_bytes: file.originalSize,
         duplicate: false,
       };
     });
@@ -123,11 +123,11 @@ export function createUploadService(
             data: {
               doc_id: docId,
               application_id: app.application_id,
-              file_name: `${docId}.txt`,
+              file_name: `${docId}.${file.format}`,
               declared_doc_type: declaredTypes[index] as (typeof DECLARED_DOC_TYPES)[number],
-              text: file.text,
+              text: file.text, // for a PDF: its extracted text layer
               sha256: file.sha256,
-              size_bytes: file.bytes.length,
+              size_bytes: file.originalSize,
               dataset: app.dataset,
               uploaded_by: caller.userId,
               submission_round: round,
@@ -141,7 +141,9 @@ export function createUploadService(
             details: {
               declared_doc_type: declaredTypes[index] as string,
               sha256: file.sha256,
-              size_bytes: file.bytes.length,
+              size_bytes: file.originalSize,
+              source_format: file.format,
+              ...(file.pages ? { pdf_pages: file.pages } : {}),
             },
           });
         }

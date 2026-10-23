@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { submitCheckerDecision, submitRecommendation } from '@/api/client';
-import { ApiError } from '@/api/http';
+import { actionMessage } from '@/lib/errors';
 import { Field } from '@/components/common/Field';
 import { useToast } from '@/components/toast/toast-context';
 import { Alert } from '@/components/ui/alert';
@@ -72,7 +72,7 @@ function DecisionForm({
     try {
       onDone(await send(action, comment.trim()));
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : 'Could not reach the server.';
+      const message = actionMessage(err);
       setServerError(message);
       toast.error(message);
       setConfirming(false);

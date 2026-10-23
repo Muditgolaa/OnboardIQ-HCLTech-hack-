@@ -1271,6 +1271,26 @@
         }
       }
     },
+    "/api/v1/admin/applications": {
+      "get": {
+        "tags": [
+          "Compliance"
+        ],
+        "summary": "All applications with status, rules decision, risk and reason codes (masked PAN)",
+        "description": "Compliance Officer only.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Not signed in, or invalid service key"
+          },
+          "403": {
+            "description": "Role not allowed (or maker = checker)"
+          }
+        }
+      }
+    },
     "/api/v1/admin/process-received": {
       "post": {
         "tags": [

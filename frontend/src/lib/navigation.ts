@@ -14,6 +14,7 @@ export const NAV_BY_ROLE: Record<Role, NavLinkDef[]> = {
   KYC_OFFICER: [{ to: '/review', label: 'Review queue' }],
   COMPLIANCE_OFFICER: [
     { to: '/checker', label: 'Checker queue' },
+    { to: '/all-applications', label: 'All applications' },
     { to: '/dashboard', label: 'Dashboard' },
     { to: '/audit', label: 'Audit' },
     { to: '/maintenance', label: 'Maintenance' },

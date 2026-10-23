@@ -146,7 +146,13 @@ export function createApp(deps: AppDeps): Express {
   api.use('/', workflowRouter({ prisma, authenticate: authn, applications, workflow }));
   api.use(
     '/admin',
-    adminRouter(prisma, authn, { maintenance, processing, dashboard, outputDir: config.outputDir }),
+    adminRouter(prisma, authn, {
+      applications,
+      maintenance,
+      processing,
+      dashboard,
+      outputDir: config.outputDir,
+    }),
   );
   app.use('/api/v1', api);
 

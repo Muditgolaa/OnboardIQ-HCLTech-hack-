@@ -69,12 +69,13 @@ export function createApplicationsService(prisma: PrismaClient) {
     return steps;
   }
 
-  /**
-   * Review work list (FR-6): HIGH risk first, then the case that has waited longest. Risk and decision come from
-   * the latest rule evaluation; a case without one is listed last.
-   */
-  async function queue(status: ApplicationStatus) {
-    const apps = await prisma.application.findMany({ where: { status }, take: 500 });
+  /** Applications with risk, decision and reason codes of their latest evaluation, and when they reached their status. */
+  async function withEvaluation(where: { status?: ApplicationStatus }, take: number) {
+    const apps = await prisma.application.findMany({
+      where,
+      take,
+      orderBy: { created_at: 'desc' },
+    });
     const ids = apps.map((a) => a.application_id);
     const [evaluations, changes] = await Promise.all([
       prisma.ruleEvaluation.findMany({
@@ -88,22 +89,31 @@ export function createApplicationsService(prisma: PrismaClient) {
       }),
     ]);
     const latest = new Map(evaluations.map((e) => [e.application_id, e]));
+    const statusOf = new Map(apps.map((a) => [a.application_id, a.status]));
     const since = new Map<string, Date>();
-    for (const c of changes)
-      if ((c.after as { status?: string } | null)?.status === status && c.application_id)
-        since.set(c.application_id, c.created_at);
+    for (const c of changes) {
+      const id = c.application_id;
+      if (id && (c.after as { status?: string } | null)?.status === statusOf.get(id))
+        since.set(id, c.created_at);
+    }
+    return apps.map((a) => {
+      const e = latest.get(a.application_id);
+      return {
+        ...toListItem(a),
+        decision: e?.decision ?? null,
+        risk_category: e?.risk_category ?? null,
+        reason_codes: e?.reason_codes ?? [],
+        waiting_since: (since.get(a.application_id) ?? a.created_at).toISOString(),
+      };
+    });
+  }
 
-    return apps
-      .map((a) => {
-        const e = latest.get(a.application_id);
-        return {
-          ...toListItem(a),
-          decision: e?.decision ?? null,
-          risk_category: e?.risk_category ?? null,
-          reason_codes: e?.reason_codes ?? [],
-          waiting_since: (since.get(a.application_id) ?? a.created_at).toISOString(),
-        };
-      })
+  /**
+   * Review work list (FR-6): HIGH risk first, then the case that has waited longest. Risk and decision come from
+   * the latest rule evaluation; a case without one is listed last.
+   */
+  async function queue(status: ApplicationStatus) {
+    return (await withEvaluation({ status }, 500))
       .sort(
         (x, y) =>
           (RISK_ORDER[x.risk_category ?? ''] ?? 9) - (RISK_ORDER[y.risk_category ?? ''] ?? 9) ||
@@ -112,6 +122,9 @@ export function createApplicationsService(prisma: PrismaClient) {
       )
       .slice(0, 100);
   }
+
+  /** Every application, newest first (Compliance Officer search, including final and rejected cases). */
+  const all = () => withEvaluation({}, 2000);
 
   async function detail(caller: AuthContext, applicationId: string) {
     const app = await authorizeApplication(prisma, caller, applicationId);
@@ -175,7 +188,7 @@ export function createApplicationsService(prisma: PrismaClient) {
     });
   }
 
-  return { listMine, queue, detail };
+  return { listMine, queue, all, detail };
 }
 
 export type ApplicationsService = ReturnType<typeof createApplicationsService>;

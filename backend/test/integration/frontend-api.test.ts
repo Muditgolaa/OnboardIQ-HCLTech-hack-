@@ -267,6 +267,39 @@ describeDb('screen endpoints (real data)', () => {
     });
   });
 
+  describe('all applications (Compliance Officer search)', () => {
+    it('lists every application, including auto-rejected ones the officer queue never shows, with masked PAN', async () => {
+      const res = await call('get', '/admin/applications', 'checkerA');
+      expect(res.status).toBe(200);
+      const list = res.body.applications as {
+        application_id: string;
+        status: string;
+        decision: string | null;
+        reason_codes: string[];
+        pan_masked: string;
+      }[];
+      expect(list).toHaveLength(await prisma.application.count());
+      const rejected = list.find((a) => a.application_id === 'A2000002');
+      expect(rejected).toMatchObject({
+        status: 'AUTO_REJECTED',
+        decision: 'REJECT',
+        reason_codes: ['AGE_BELOW_18'],
+      });
+      expect(JSON.stringify(list)).not.toMatch(/"pan_number"/);
+      const queue = await call('get', '/review/queue', 'officerA');
+      expect(
+        (queue.body.applications as { application_id: string }[]).some(
+          (a) => a.application_id === 'A2000002',
+        ),
+      ).toBe(false);
+    });
+
+    it('is for Compliance Officers only', async () => {
+      expect((await call('get', '/admin/applications', 'officerA')).status).toBe(403);
+      expect((await call('get', '/admin/applications', 'applicantA')).status).toBe(403);
+    });
+  });
+
   describe('reference data', () => {
     it('lists the occupations from the database for the application form, to any signed-in user', async () => {
       const res = await call('get', '/reference/occupations', 'applicantA');

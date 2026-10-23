@@ -186,3 +186,5 @@ export const processReceived = () =>
     `${V1}/admin/process-received`,
     { method: 'POST' },
   );
+export const listAllApplications = () =>
+  apiFetch<{ applications: QueueItem[] }>(`${V1}/admin/applications`);

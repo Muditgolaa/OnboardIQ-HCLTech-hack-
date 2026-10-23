@@ -12,7 +12,7 @@ repository root.
 
 | Area | Result |
 | --- | --- |
-| Automated tests | **518 backend + 56 frontend component + 3 Chrome end-to-end: all pass, 0 skipped** |
+| Automated tests | **526 backend + 61 frontend component + 3 Chrome end-to-end: all pass, 0 skipped** |
 | Sample decisions (golden) | **60 / 60** applications match all five expected columns |
 | Worked examples 1-12 | **12 / 12** pass (examples 1-10 engine + API; 11-12 live workflow) |
 | AI-1 classification (sample) | **100.0 % (178/178)**; baselines 98.3 % (declared type) and 84.3 % (keyword rule) |
@@ -115,8 +115,8 @@ Legend: **PASS** (test evidence) · **PARTIAL** (part verified, rest stated) · 
 
 | Suite | Command | Result |
 | --- | --- | --- |
-| Backend unit + integration (real PostgreSQL test database) | `npm --prefix backend test` | 34 files, **518 passed**, 0 failed, 0 skipped |
-| Frontend components (jsdom) | `npm --prefix frontend test` | 12 files, **56 passed** |
+| Backend unit + integration (real PostgreSQL test database) | `npm --prefix backend test` | 34 files, **526 passed**, 0 failed, 0 skipped |
+| Frontend components (jsdom) | `npm --prefix frontend test` | 14 files, **61 passed** |
 | End-to-end (installed Chrome, throw-away database) | `npm run e2e` | **3 passed**: new application with upload; applicant → officer correction → different checker → approved; registration + watchlist change + re-screen |
 | Static checks + builds | `npm run check` | typecheck, ESLint, Prettier, both builds: pass |
 | Output validation | `npm run outputs -- --fresh-db` | 32/32 checks |
@@ -224,6 +224,9 @@ requests. Single-machine figures; they are not a capacity test.
 | 4 | AI-5 reviewer summary (MAY) missing; LLM requested by the product owner | Guarded LLM summary, off by default, documented in the model card and `/prompt` | 12 backend + 3 component tests |
 
 | 5 | Imported applications stayed SUBMITTED until an applicant pressed Submit, so the dashboard showed 160 received and rates over one case | `npm run db:process`, processing inside `db:seed`, **Maintenance → Process received applications**, and a dashboard notice while received cases wait | `process-received.test.ts` (3): 158/158 routed, sample decisions equal the expected columns, repeat is a no-op, screen-started cases untouched |
+| 7 | Auto-rejected cases could not be found by anyone on screen (the officer queue shows REVIEW only, by design) | Compliance **All applications** page (`GET /admin/applications`) | `frontend-api.test.ts` (2), `AllApplications.test.tsx` (2) |
+| 8 | Only `.txt` uploads | Text-based PDF upload (pdf.js text layer, 1 MB, 10 pages, 10 s; scans refused with 422) | `upload-validation.test.ts` (3), `documents.test.ts` (3), E2E test 1; live: PDF PAN read by Groq at 0.97 |
+| 9 | Raw error text for refused actions | One message per status on every action screen: 403 with the server reason, 409 with "reload" | `errors.test.ts` (3) |
 | 6 | Only Anthropic available as LLM provider | Groq client (OpenAI-compatible, forced tool call) for extraction and AI-5, chosen per feature in `.env` | `llm-clients.test.ts` (5) |
 
 Earlier in this session: three admin routes (`rescreen`, `expire-overdue`, `rekyc-due`) had been lost in an edit
@@ -242,7 +245,7 @@ npm run dev                     # API http://localhost:3000 (docs /api/docs), UI
 docker compose up --build       # alternative: everything in Docker, UI on http://localhost:8080
 
 # verify
-npm run check                   # typecheck, lint, format, 518 + 56 tests, builds
+npm run check                   # typecheck, lint, format, 526 + 61 tests, builds
 npm run e2e                     # Chrome end-to-end (own database)
 npm run outputs -- --fresh-db   # regenerate and validate /output
 npm run outputs:repeat          # determinism proof

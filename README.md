@@ -276,6 +276,15 @@ GROQ_MODEL=openai/gpt-oss-120b
 The start-up line shows which LLM each feature uses. The AI never decides: summaries and extraction proposals are
 schema-checked, and anything that fails a guardrail is withheld.
 
+Uploads accept `.txt` files and **text-based PDFs** (at most 1 MB and 10 pages). The PDF text layer is extracted on the
+server (pdf.js, nothing executed) and then handled exactly like a `.txt` document; with `EXTRACTION_PROVIDER=ai` and
+`EXTRACTION_LLM=groq` Groq reads the fields. Scanned PDFs (images without text) are refused with 422 `PDF_NO_TEXT`:
+the configured Groq models have no vision/OCR model.
+
+Compliance Officers have **All applications** (every case, including auto-approved and auto-rejected ones, which never
+reach the KYC Officer queue) next to the Checker queue. Maker-checker: a KYC Officer recommends on an In-review case
+(maker); the case moves to Awaiting checker, where a different Compliance Officer approves, rejects or sends it back.
+
 Imported applications arrive as Submitted. `npm run db:seed` processes them (extraction + rules + routing) so the
 queues and dashboard have data; on an existing database run `npm run db:process` once, or use
 **Maintenance → Process received applications**.

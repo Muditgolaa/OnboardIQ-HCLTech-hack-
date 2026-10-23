@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { getStaffApplication, submitCorrections } from '@/api/client';
 import { ApiError } from '@/api/http';
+import { actionMessage } from '@/lib/errors';
 import { PageHeader } from '@/components/common/PageHeader';
 import { DecisionBadge, RiskBadge, StatusBadge } from '@/components/common/StatusBadge';
 import { ErrorState, LoadingState } from '@/components/common/States';
@@ -64,12 +65,7 @@ export function CaseReview() {
       );
       void navigate(queue);
     } catch (err) {
-      const message =
-        err instanceof ApiError
-          ? err.fields.length
-            ? err.fields.map((f) => f.message).join(' ')
-            : err.message
-          : 'Could not reach the server.';
+      const message = actionMessage(err);
       setCorrectionError(message);
       toast.error(message);
       setConfirming(false);

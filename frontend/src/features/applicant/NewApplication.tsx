@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { createApplication, getOccupations, type NewApplicationInput } from '@/api/client';
 import { ApiError } from '@/api/http';
+import { actionMessage } from '@/lib/errors';
 import { Field } from '@/components/common/Field';
 import { PageHeader } from '@/components/common/PageHeader';
 import { ErrorState, LoadingState } from '@/components/common/States';
@@ -129,7 +130,7 @@ export function NewApplication() {
         for (const f of err.fields) fromServer[f.field as keyof Values] = f.message;
         setErrors(fromServer);
         toast.error('The server rejected some fields. Please correct them.');
-      } else toast.error(err instanceof ApiError ? err.message : 'Could not reach the server.');
+      } else toast.error(actionMessage(err));
       setBusy(false);
     }
   }
