@@ -118,7 +118,7 @@ export function AiEvaluation() {
           const ai = m.sample.ai.metrics;
           const v1 = m.sample.regexOnly.metrics;
           return (
-            <div className="grid gap-6">
+            <div className="grid grid-cols-1 gap-6 [&>*]:min-w-0">
               <Alert tone="warning" title="Read these numbers with care">
                 The extractor was developed on the sample documents, so these are development-set
                 results. The evaluation set has no labels, so no accuracy is claimed for it. No
@@ -206,7 +206,7 @@ export function AiEvaluation() {
                   </table>
                 </CardContent>
               </Card>
-              <div className="grid gap-6 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 [&>*]:min-w-0">
                 <Card>
                   <CardHeader>
                     <CardTitle>Confusion matrix: AI provider</CardTitle>

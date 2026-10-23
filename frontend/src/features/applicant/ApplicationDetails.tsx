@@ -54,7 +54,7 @@ export function ApplicationDetails() {
         description={`${a.full_name} · applied on ${formatDate(a.application_date)}`}
         actions={<StatusBadge status={a.status} />}
       />
-      <div className="grid gap-6 lg:grid-cols-[3fr_2fr]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] [&>*]:min-w-0">
         <div className="grid content-start gap-6">
           <Card>
             <CardHeader>

@@ -115,7 +115,7 @@ export function ComplianceDashboard() {
           const maxStatus = Math.max(1, ...Object.values(d.by_status));
           const maxCode = Math.max(1, ...d.top_reason_codes.map((c) => c.count));
           return (
-            <div className="grid gap-6">
+            <div className="grid grid-cols-1 gap-6 [&>*]:min-w-0">
               {d.by_status.SUBMITTED > 0 && (
                 <Alert
                   tone="info"
@@ -171,7 +171,7 @@ export function ComplianceDashboard() {
                   hint={`${d.review_time.completed_reviews} finished, ${d.review_time.open_reviews} still open`}
                 />
               </section>
-              <div className="grid gap-6 lg:grid-cols-2">
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 [&>*]:min-w-0">
                 <Card>
                   <CardHeader>
                     <CardTitle>Applications by status</CardTitle>

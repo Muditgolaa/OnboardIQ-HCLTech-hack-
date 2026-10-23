@@ -9,7 +9,7 @@ async function signIn(page: Page, email: string) {
   await page.getByLabel('E-mail').fill(email);
   await page.getByLabel('Password').fill(PASSWORD);
   await page.getByRole('button', { name: 'Sign in' }).click();
-  await expect(page.getByRole('navigation', { name: 'Main' })).toBeVisible();
+  await page.waitForURL((url) => !url.pathname.startsWith('/login')); // on a phone the menu is collapsed
 }
 
 async function signOut(page: Page) {
@@ -185,4 +185,60 @@ test('a visitor registers as an applicant; a compliance officer changes a watchl
   await page.getByRole('button', { name: 'Remove SAN9901' }).click();
   await page.getByRole('button', { name: 'Confirm' }).click();
   await expect(page.getByRole('cell', { name: 'SAN9901', exact: true })).toHaveCount(0);
+});
+
+// Responsive check: every screen at phone width (390 px) fits without horizontal scrolling, and the menu works.
+test.describe('responsive layout at phone width', () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  async function fitsWidth(page: Page, path: string) {
+    await page.goto(path);
+    await page.locator('main, [role="main"], h1').first().waitFor();
+    await page.waitForLoadState('networkidle');
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - window.innerWidth,
+    );
+    expect(overflow, `${path} is ${overflow}px wider than the screen`).toBeLessThanOrEqual(1);
+  }
+
+  test('sign-in and registration', async ({ page }) => {
+    await fitsWidth(page, '/login');
+    await fitsWidth(page, '/register');
+  });
+
+  test('applicant screens', async ({ page }) => {
+    await signIn(page, 'applicant1@onboardiq.test');
+    for (const path of ['/applications', '/applications/new', '/applications/A2000009'])
+      await fitsWidth(page, path);
+  });
+
+  test('officer screens, and the menu opens on a phone', async ({ page }) => {
+    await page.goto('/login');
+    await page.getByLabel('E-mail').fill('officer1@onboardiq.test');
+    await page.getByLabel('Password').fill(PASSWORD);
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await page.getByRole('button', { name: 'Menu' }).click();
+    await expect(
+      page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Review queue' }),
+    ).toBeVisible();
+    await fitsWidth(page, '/review');
+  });
+
+  test('compliance screens', async ({ page }) => {
+    await page.goto('/login');
+    await page.getByLabel('E-mail').fill('checker1@onboardiq.test');
+    await page.getByLabel('Password').fill(PASSWORD);
+    await page.getByRole('button', { name: 'Sign in' }).click();
+    await page.getByRole('button', { name: 'Menu' }).waitFor();
+    for (const path of [
+      '/dashboard',
+      '/checker',
+      '/all-applications',
+      '/cases/A2000009',
+      '/audit?application=A2000009',
+      '/maintenance',
+      '/ai-evaluation',
+    ])
+      await fitsWidth(page, path);
+  });
 });

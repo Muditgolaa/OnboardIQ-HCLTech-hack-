@@ -1,0 +1,43 @@
+# Runs on every push and pull request: typecheck, lint, format, all unit/integration/component tests against a real
+# PostgreSQL, both builds, the /output validation, and the Chrome end-to-end tests. CI-only throw-away credentials.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: onboardiq
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: onboardiq
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U onboardiq" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://onboardiq:ci-only-password@localhost:5432/onboardiq
+      SESSION_SECRET: ci-only-session-secret-0123456789abcdef
+      CORE_BANKING_SERVICE_KEY: ci-only-core-banking-key
+      EXTRACTION_PROVIDER: mock
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: '**/package-lock.json'
+      - name: Install
+        run: npm ci && npm --prefix backend ci && npm --prefix frontend ci
+      - name: Typecheck, lint, format, tests, builds
+        run: npm run check
+      - name: Validate the committed /output deliverables
+        run: npm run outputs:validate
+      - name: End-to-end tests (Chrome)
+        run: npm run e2e

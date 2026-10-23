@@ -594,7 +594,7 @@ export function Maintenance() {
         title="Maintenance"
         description="Rule configuration, watchlists, re-screening and re-KYC."
       />
-      <div className="grid gap-6">
+      <div className="grid grid-cols-1 gap-6 [&>*]:min-w-0">
         <OperationsCard />
         <WatchlistCard />
         <RuleConfigCard />
