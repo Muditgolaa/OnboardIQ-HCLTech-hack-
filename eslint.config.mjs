@@ -29,6 +29,11 @@ export default tseslint.config(
     },
   },
   {
+    // Node scripts (for example the report PDF renderer); code inside page.evaluate runs in the browser.
+    files: ['**/scripts/**/*.mjs'],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
+  {
     // Tests index into fixtures they have just built, so a missing element should fail loudly anyway.
     files: ['**/*.test.{ts,tsx}', '**/test/**/*.ts'],
     rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
