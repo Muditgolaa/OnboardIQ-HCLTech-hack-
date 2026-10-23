@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OnboardIQ: Solution Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root { --ivory:#f8f5ee; --ivory-deep:#efe9dc; --ink:#1d1d1b; --ink-soft:#5f5c55; --line:#e2dbcc; --forest:#1f4d3a; --forest-soft:#e3eee7; --amber:#9a5b0c; --amber-soft:#f8ecd8; --danger:#a3271f; --danger-soft:#f7e3e0; --info:#2a4f7a; --info-soft:#e3ebf5; }
+  @page { size: A4; margin: 13mm 13mm 15mm 13mm; }
+  * { box-sizing: border-box; }
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body { margin: 0; font-family: Geist, -apple-system, 'Helvetica Neue', Arial, sans-serif; color: var(--ink); font-size: 9.4pt; line-height: 1.45; }
+  h1, h2, h3 { font-family: Fraunces, Georgia, serif; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  h2 { font-size: 18pt; margin: 0 0 3mm; }
+  h3 { font-size: 12pt; margin: 4mm 0 1.5mm; }
+  p { margin: 0 0 2.6mm; }
+  .eyebrow { font-size: 8pt; letter-spacing: .14em; text-transform: uppercase; color: var(--forest); font-weight: 600; margin-bottom: 1.5mm; }
+  .lead { font-size: 11pt; color: var(--ink-soft); }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .avoid { break-inside: avoid; }
+  code, .mono { font-family: 'Geist Mono', Menlo, monospace; font-size: 8.6pt; }
+  code { background: var(--ivory); padding: .1em .35em; border-radius: 3px; }
+  table { width: 100%; border-collapse: collapse; margin: 1.5mm 0 3mm; font-size: 8.1pt; line-height: 1.38; }
+  th, td { text-align: left; vertical-align: top; padding: 1.1mm 1.8mm; border-bottom: 1px solid var(--line); }
+  th { background: var(--ivory); font-weight: 600; font-size: 8pt; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-soft); }
+  tr { break-inside: avoid; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pill { display: inline-block; padding: .2mm 2mm; border-radius: 99px; font-size: 7.8pt; font-weight: 600; white-space: nowrap; }
+  .pass { background: var(--forest-soft); color: var(--forest); }
+  .part { background: var(--amber-soft); color: var(--amber); }
+  .no { background: var(--danger-soft); color: var(--danger); }
+  .info { background: var(--info-soft); color: var(--info); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3mm; }
+  .card { border: 1px solid var(--line); border-radius: 3mm; padding: 4mm; background: #fff; }
+  .stat { border: 1px solid var(--line); border-radius: 3mm; padding: 3mm 3.5mm; background: #fff; }
+  .stat b { display: block; font-family: Fraunces, Georgia, serif; font-size: 18pt; font-weight: 600; line-height: 1.15; }
+  .stat span { font-size: 8pt; color: var(--ink-soft); }
+  figure { margin: 2mm 0 5mm; break-inside: avoid; }
+  figure img { width: 100%; border: 1px solid var(--line); border-radius: 2mm; display: block; }
+  figcaption { font-size: 8.4pt; color: var(--ink-soft); margin-top: 1.5mm; }
+  .tall img { max-height: 225mm; width: auto; max-width: 100%; margin: 0 auto; }
+  .phone img { width: 40mm; margin: 0 auto; }
+  ul { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1mm; }
+  .cover { height: 255mm; display: flex; flex-direction: column; justify-content: space-between; background: var(--ivory); border-radius: 4mm; padding: 16mm 14mm; }
+  .cover h1 { font-size: 40pt; line-height: 1.05; }
+  .cover .tag { font-size: 14pt; color: var(--ink-soft); margin-top: 4mm; max-width: 140mm; }
+  .motto { font-family: Fraunces, Georgia, serif; font-size: 17pt; color: var(--forest); }
+  .flow { display: flex; align-items: stretch; gap: 2mm; margin: 3mm 0 4mm; }
+  .flow div { flex: 1; border: 1px solid var(--line); border-radius: 2.5mm; padding: 2.5mm; background: #fff; font-size: 8.4pt; }
+  .flow b { display: block; font-size: 9pt; margin-bottom: .8mm; }
+  .flow .arrow { flex: 0 0 4mm; border: 0; background: none; padding: 0; display: flex; align-items: center; justify-content: center; color: var(--ink-soft); font-size: 12pt; }
+  .callout { border-left: 3px solid var(--forest); background: var(--forest-soft); padding: 3mm 4mm; border-radius: 0 2mm 2mm 0; margin: 3mm 0 4mm; }
+  .callout.warn { border-color: var(--amber); background: var(--amber-soft); }
+  .small { font-size: 8.4pt; color: var(--ink-soft); }
+  .toc li { margin-bottom: 1.4mm; }
+</style>
+</head>
+<body>
+
+<!-- 1. Cover -->
+<section class="page">
+  <div class="cover">
+    <div>
+      <div class="eyebrow">HCLTech BFSI Engineering Challenge · Use Case 02 · Deccan Digital Bank (fictional)</div>
+      <h1>OnboardIQ</h1>
+      <p class="tag">Intelligent KYC onboarding: document verification, watchlist screening and maker-checker approval, built and validated end to end.</p>
+      <p class="motto" style="margin-top:10mm">AI proposes. Rules decide. Humans approve.</p>
+    </div>
+    <div class="grid4">
+      <div class="stat"><b>60 / 60</b><span>sample applications match every expected column</span></div>
+      <div class="stat"><b>594</b><span>automated tests, all passing (526 + 61 + 7 E2E)</span></div>
+      <div class="stat"><b>100%</b><span>document classification on the sample set (target 97%)</span></div>
+      <div class="stat"><b>27 ms</b><span>slowest single evaluation through the API (target 2 s)</span></div>
+    </div>
+    <div>
+      <p class="small">Solution report · 23 October 2026 · Source: <span class="mono">github.com/Muditgolaa/OnboardIQ-HCLTech-hack-</span> (branch <span class="mono">main</span>)<br>All data is synthetic. Every number in this report was measured on the delivered code; nothing is estimated.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Summary -->
+<section class="page">
+  <div class="eyebrow">Overview</div>
+  <h2>What we built</h2>
+  <p class="lead">A web application that takes a savings-account application from submission with documents to a final outcome. It applies the 17 rules of the specification exactly, screens sanctions and PEP lists, routes doubtful cases to a KYC Officer, and requires a different Compliance Officer to approve doubtful and high-risk cases. Every decision and every document view is audited.</p>
+
+  <div class="flow avoid">
+    <div><b>1 · Applicant</b>Fills the form (only the last 4 Aadhaar digits), uploads PAN, Aadhaar and an address proof as .txt or text-based PDF.</div>
+    <div class="arrow">→</div>
+    <div><b>2 · Extraction</b>Mock provider (supplied files) or our AI provider reads each document: type, fields, confidence. Optional Groq LLM.</div>
+    <div class="arrow">→</div>
+    <div><b>3 · Rules R1–R17</b>A pure, table-driven engine decides APPROVE / REVIEW / REJECT with reason codes, name score, risk and re-KYC date.</div>
+    <div class="arrow">→</div>
+    <div><b>4 · People</b>Clean cases open automatically; REVIEW goes to a KYC Officer (maker); a different Compliance Officer (checker) decides.</div>
+  </div>
+
+  <h3>Results at a glance</h3>
+  <div class="grid4 avoid">
+    <div class="stat"><b>12 / 12</b><span>worked examples reproduced, including the two live maker-checker cases</span></div>
+    <div class="stat"><b>99.5%</b><span>field extraction accuracy on the sample set (target 90%)</span></div>
+    <div class="stat"><b>33.5%</b><span>applications needing a person on the full data set (target 30–40%)</span></div>
+    <div class="stat"><b>1 of 10</b><span>simultaneous actions on one case succeeds; 9 get HTTP 409</span></div>
+  </div>
+
+  <h3>Technology</h3>
+  <table>
+    <tr><th style="width:22%">Layer</th><th>Choice and why</th></tr>
+    <tr><td>Frontend</td><td>React 19, TypeScript, Vite, Tailwind with hand-built accessible components. One app with role-based screens; responsive down to phone width.</td></tr>
+    <tr><td>Backend</td><td>Node.js, Express 5, TypeScript, Zod validation (the same schemas generate the OpenAPI contract). Modular monolith: one API, clear modules.</td></tr>
+    <tr><td>Database</td><td>PostgreSQL 16 with Prisma migrations; audit table is append-only through a database trigger; Aadhaar limited to 4 digits by a constraint.</td></tr>
+    <tr><td>AI</td><td>Deterministic classifier and extractor with OCR-error repair and calibrated confidence (fast, explainable, reproducible). Optional LLM (Groq <span class="mono">openai/gpt-oss-120b</span> or Anthropic) that only proposes, behind strict schemas.</td></tr>
+    <tr><td>Quality</td><td>Vitest + Supertest on a real test database, Testing Library, Playwright in Chrome, GitHub Actions CI, Docker Compose.</td></tr>
+  </table>
+
+
+</section>
+
+<!-- 3. Feature tour: applicant -->
+<section class="page">
+  <div class="eyebrow">1 · Feature tour</div>
+  <h2>Applicant</h2>
+  <p>Applicants register, sign in, fill one form, upload documents and follow their case. They never see confidence scores, watchlist data or other people's applications; the server enforces this, not just the screen.</p>
+  <figure><img src="img/01-login.jpg" alt="Sign-in page"><figcaption>Sign in, with a link to create an applicant account. Bank staff accounts are created by the bank; a request that tries to choose a role is refused.</figcaption></figure>
+  <div class="grid2">
+    <figure><img src="img/03-new-application.jpg" alt="New application form"><figcaption>Application form: every field validated on screen and again on the server. A full 12-digit Aadhaar number is refused with a clear message; consent to KYC checks is mandatory.</figcaption></figure>
+    <figure><img src="img/02-applicant-home.jpg" alt="My applications"><figcaption>My applications: status and the next step in plain words. Search, sort, filter and pagination on every list.</figcaption></figure>
+  </div>
+</section>
+
+<section class="page">
+  <figure class="tall"><img src="img/04-applicant-details.jpg" alt="Application details"><figcaption>Application details: where things stand, plain-language reasons when documents are needed, a status timeline and the documents. Uploads accept .txt and text-based PDF (at most 1 MB, 10 pages); the same file twice is never stored twice (SHA-256).</figcaption></figure>
+</section>
+
+<!-- KYC officer -->
+<section class="page">
+  <div class="eyebrow">1 · Feature tour</div>
+  <h2>KYC Officer (maker)</h2>
+  <p>Officers work the review queue: highest risk first, then the longest waiting. They only see cases in review, awaiting the checker or awaiting new documents.</p>
+  <figure><img src="img/05-review-queue.jpg" alt="Review queue"><figcaption>Review queue with risk, rules result, reason codes, waiting time and masked PAN.</figcaption></figure>
+</section>
+
+<section class="page">
+  <figure class="tall"><img src="img/06-case-review.jpg" alt="Case review"><figcaption>Case review for worked example 9. The PAN read at confidence 0.62 is highlighted (below the configured 0.80), so the PAN comparison is skipped and a person decides. Document text appears next to the extracted values; opening it is audited. Each value can be corrected with a mandatory reason (confidence 1.00, source OFFICER; the rules re-run). Rule results show the values compared. The discrepancy summary was written live by Groq, labelled "AI-generated", checked against the case data and never recommends a decision. The recommendation needs a comment of at least 10 characters.</figcaption></figure>
+</section>
+
+<!-- Compliance -->
+<section class="page">
+  <div class="eyebrow">1 · Feature tour</div>
+  <h2>Compliance Officer (checker)</h2>
+  <p>Compliance Officers decide cases awaiting a checker, see the dashboard and audit trail, find any application, and maintain watchlists and rule configuration.</p>
+  <div class="grid2">
+    <figure><img src="img/08-checker-queue.jpg" alt="Checker queue"><figcaption>Checker queue: cases with an officer recommendation and high-risk approvals.</figcaption></figure>
+    <figure><img src="img/09-all-applications.jpg" alt="All applications"><figcaption>All applications, including auto-approved and auto-rejected cases that never reach an officer.</figcaption></figure>
+  </div>
+  <figure class="tall" style="max-height:150mm"><img src="img/13-checker-case.jpg" alt="Checker case" style="max-height:150mm"><figcaption>Worked example 10: the rules approve, but the risk is HIGH (jeweller / bullion dealer), so the case waits for a checker. Approve opens the account through the mock core-banking service; the maker of a case can never check it (HTTP 403).</figcaption></figure>
+</section>
+
+<section class="page">
+  <figure class="tall"><img src="img/07-dashboard.jpg" alt="Dashboard" style="max-height:122mm"><figcaption>Dashboard on the full data set (160 supplied applications plus live ones): straight-through rate = auto-approved ÷ decided, review and reject rates, top 5 reason codes, time in review, items waiting for a checker with the 24-hour SLA, date filter. Every figure is computed by the backend and reconciled against the tables in a test.</figcaption></figure>
+  <figure><img src="img/10-audit.jpg" alt="Audit trail"><figcaption>Audit trail of one application in order: status changes, decisions, corrections with old and new values, document views and denied access. Export as CSV. The database blocks any update or delete of audit rows.</figcaption></figure>
+</section>
+
+<section class="page">
+  <figure><img src="img/11-maintenance.jpg" alt="Maintenance"><figcaption>Maintenance: process received applications, re-screen open cases after a watchlist change, close overdue resubmissions (7 days), re-KYC due list, sanctions and PEP list maintenance, and new rule-configuration versions (for example, changing the name-match threshold changes decisions without a code change).</figcaption></figure>
+  <figure><img src="img/12-ai-evaluation.jpg" alt="AI evaluation"><figcaption>AI evaluation results, read from the generated report files: headline metrics, per-field accuracy against baselines, confusion matrices, the evaluation report and the model card.</figcaption></figure>
+</section>
+
+<section class="page">
+  <div class="eyebrow">1 · Feature tour</div>
+  <h2>On a phone, and for developers</h2>
+  <p>Every screen fits a 390-pixel-wide phone without sideways scrolling; this is checked automatically for 14 screens in Chrome. The menu collapses behind a Menu button.</p>
+  <div class="grid2">
+    <figure class="phone"><img src="img/14-mobile-dashboard.jpg" alt="Dashboard on a phone"><figcaption style="text-align:center">Dashboard at phone width</figcaption></figure>
+    <figure class="phone"><img src="img/15-mobile-menu.jpg" alt="Menu on a phone"><figcaption style="text-align:center">Role menu opened on a phone</figcaption></figure>
+  </div>
+  <figure><img src="img/16-api-docs.jpg" alt="API documentation"><figcaption>Interactive API documentation (OpenAPI 3.1, Swagger UI at <span class="mono">/api/docs</span>). Request schemas are generated from the validation code; a test fails if a route is undocumented.</figcaption></figure>
+</section>
+
+<!-- 4. Coverage -->
+<section class="page">
+  <div class="eyebrow">2 · Specification coverage</div>
+  <h2>Every requirement, and how it is met</h2>
+  <p class="small">PASS means an automated test or a measured command shows it. The full matrix with test names is in <span class="mono">output/qa_report.md</span>.</p>
+  <table>
+    <tr><th style="width:9%">ID</th><th style="width:33%">Requirement</th><th>What we built · evidence</th><th style="width:11%">Result</th></tr>
+    <tr><td>FR-1</td><td>Roles on the server; no access to other applicants' data</td><td>Role guards and ownership checks on every route; another applicant's case answers 404, a wrong role 403; attempts are audited. 29 authorisation tests.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-2</td><td>Form + upload, server validation, last-4 Aadhaar, SHA-256</td><td>400/422 naming each field; 12-digit Aadhaar refused; .txt (UTF-8) and text PDF, 1 MB, at least 3 files, hash de-duplication.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-3</td><td>Extraction interface, mock and ai by configuration</td><td><span class="mono">POST /documents/{id}/extract</span>; unknown document → OTHER 0.00; <span class="mono">EXTRACTION_PROVIDER</span> switches with no code change.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-4</td><td>R1–R17, decision, codes, score, risk, re-KYC from configuration</td><td>Table-driven pure engine; 60/60 golden test; config change test; 75 rule tests at every boundary.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-5</td><td>Normalisation + Levenshtein; matched entry on screen</td><td>Example 4 = 0.7647; examples 6 and 7 show SAN0002 and PEP0001 with similarity and date-of-birth comparison.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-6</td><td>Review workbench</td><td>Risk-ordered queue, text beside fields, low-confidence highlight, correction with reason re-runs rules, recommendation with comment.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-7</td><td>Maker-checker, mock core banking</td><td>Maker = checker → 403 (example 11); HIGH-risk approval waits (example 10); approval returns customer ID and account number.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-8</td><td>Applicant tracking and resubmission</td><td>Timeline, readable reason for every code, 7-day resubmission with re-evaluation and expiry.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-9</td><td>Append-only audit</td><td>Status, decisions, corrections (before/after), watchlist hits, document views; trigger blocks update/delete.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-10</td><td>Dashboard that reconciles</td><td>All required figures plus date filter; recomputed independently from the tables in a test.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>FR-11</td><td>Batch decisions command</td><td><span class="mono">npm run batch</span> writes <span class="mono">decisions_output.csv</span>; sample run reproduces all expected columns.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>AI-1</td><td>Classification ≥ 97%, two baselines, injection → OTHER</td><td>100.0% (178/178) vs 98.3% (declared type) and 84.3% (keyword rule); injection document D3000486 → OTHER.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>AI-2</td><td>Extraction ≥ 90%; ≥ 98% PAN, Aadhaar-4, DOB on clean scans</td><td>99.5% overall (regex-only first version 83.2%); clean PAN / Aadhaar-4 / DOB 100%.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>AI-3</td><td>"ai" provider integrated, 10 s timeout, output files</td><td>Uploads classified and decided automatically; failure or timeout → confidence 0 → REVIEW; evaluation outputs generated and validated.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>AI-4</td><td>Calibration and officer feedback (SHOULD)</td><td>Fields accepted at ≥ 0.80 are 100% correct (742/742); corrections stored as labelled feedback. Correction rate needs real officer feedback, which the data does not contain.</td><td><span class="pill part">PARTIAL</span></td></tr>
+    <tr><td>AI-5</td><td>LLM reviewer summary (MAY)</td><td>Groq summary, ≤ 80 words, "AI-generated", values checked against the case, decision wording refused; tested with a fake model and live.</td><td><span class="pill pass">PASS</span></td></tr>
+  </table>
+</section>
+
+<section class="page">
+  <table>
+    <tr><th style="width:24%">Area</th><th>What we built · evidence</th><th style="width:11%">Result</th></tr>
+    <tr><td>Responsible AI</td><td>AI only supplies values; every reason shows the values compared; fields below 0.80 cannot cause a rejection; fallback to REVIEW; LLM input in random delimiters with strict output schemas; fairness: NAME_MISMATCH_MINOR is 2.0% for both genders; extractor, model and prompt version stored with every extraction.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>Outputs</td><td><span class="mono">decisions_output.csv</span>, <span class="mono">extraction_output.csv</span>, <span class="mono">ai_decisions_output.csv</span>, evaluation report, model card, audit CSV, decision API response: 32/32 validation checks (headers, column order, row counts, dates, 4-decimal scores, empty cells), byte-identical across two runs from empty databases.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>Performance</td><td>One application through the API: max 27 ms (target 2 s). AI extraction without LLM: max 17 ms per document (target 1 s); with Groq about 1 s (target 10 s, one live sample). 100-application batch: 0.18 s (target 60 s).</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>Concurrency</td><td>Optimistic locking: 10 simultaneous submissions → 1 success, 9 × HTTP 409; also tested for two checkers and recommendation vs correction.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>Precision, configuration</td><td>Floating-point similarity rounded only for output; IST calendar dates; thresholds, patterns, titles, re-KYC periods and lists come from configuration and tables; watchlist change re-screens open cases on request.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>Files, idempotency, masking</td><td>Type, UTF-8 and size checks; stored outside the web root, never executed, served only after authorisation; same hash never stored twice; Aadhaar last 4 only; PAN masked in lists, logs and exports.</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>Deliverables</td><td>Design document, OpenAPI, lifecycle and ER diagrams in <span class="mono">output/design</span>; configuration and lists loaded from the supplied files; AI-track files; Dockerfiles and Compose; prompts in <span class="mono">/prompt</span>. Source lives in <span class="mono">backend/</span> and <span class="mono">frontend/</span> instead of a <span class="mono">/code</span> folder (explained in the README).</td><td><span class="pill pass">PASS</span></td></tr>
+    <tr><td>Bonus ideas</td><td>Built: watchlist update with re-screening, re-KYC due list, PDF upload (text layer). Not built: image OCR, highlighting the text span of each field, mock CKYC search, multilingual name matching.</td><td><span class="pill info">PARTIAL</span></td></tr>
+  </table>
+
+  <h3>Worked examples (official expected results)</h3>
+  <table>
+    <tr><th>#</th><th>Case</th><th>Expected</th><th>Our result</th><th></th></tr>
+    <tr><td>1</td><td>A2000001</td><td>APPROVE · 1.0000 · LOW · 2036-03-04 · AUTO_APPROVED</td><td>identical, account opened</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>2</td><td>A2000002</td><td>REJECT · AGE_BELOW_18 · 1.0000 · AUTO_REJECTED</td><td>identical</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>3</td><td>A2000003</td><td>REJECT · PAN_MISMATCH</td><td>identical</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>4</td><td>A2000004</td><td>REVIEW · NAME_MISMATCH_MINOR · 0.7647 · LOW</td><td>identical</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>5</td><td>A2000005</td><td>REVIEW · ADDRESS_PROOF_STALE · 1.0000 · LOW</td><td>identical</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>6</td><td>A2000006</td><td>REJECT · SANCTIONS_MATCH (SAN0002)</td><td>identical</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>7</td><td>A2000007</td><td>REVIEW · PEP_MATCH · HIGH · 2028-03-04 (PEP0001)</td><td>identical</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>8</td><td>A2000008</td><td>REVIEW · DOCUMENT_MISSING|DOCUMENT_TYPE_MISMATCH · 1.0000</td><td>identical</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>9</td><td>A2000009</td><td>REVIEW · LOW_EXTRACTION_CONFIDENCE; PAN_MISMATCH not evaluated; AI read → APPROVE</td><td>identical; AI provider reads ZZTPS9012Y ≥ 0.80 → APPROVE</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>10</td><td>A2000010</td><td>APPROVE · HIGH · 2028-03-04 · PENDING_CHECKER</td><td>identical</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>11</td><td>live</td><td>Maker tries to check own case → 403; other checker approves → account</td><td>as expected</td><td><span class="pill pass">✓</span></td></tr>
+    <tr><td>12</td><td>live</td><td>Correct PAN with reason → APPROVE, PENDING_CHECKER, old/new in audit</td><td>as expected (also in Chrome E2E)</td><td><span class="pill pass">✓</span></td></tr>
+  </table>
+</section>
+
+<!-- 5. Testing -->
+<section class="page">
+  <div class="eyebrow">3 · Testing and validation</div>
+  <h2>What we ran, and what it showed</h2>
+  <table>
+    <tr><th>Suite</th><th>What it covers</th><th class="num">Tests</th><th>Result</th></tr>
+    <tr><td>Backend unit + integration</td><td>Rules and golden data, import (duplicates, malformed files, bad references, rollback), auth, authorisation and IDOR, uploads incl. PDF, extraction and timeouts, prompt injection, workflow and maker-checker, concurrency, dashboard, audit, outputs, OpenAPI contract, AI summary guardrails, Groq client. Runs on a real PostgreSQL test database.</td><td class="num">526</td><td><span class="pill pass">all pass</span></td></tr>
+    <tr><td>Frontend components</td><td>Forms and validation (12-digit Aadhaar), tables (search, sort, filter, pages), case review (highlight, reason required, document text on demand, 10-character comment), dashboard figures and empty states, audit, maintenance, registration, role navigation, 403/409 messages, toasts.</td><td class="num">61</td><td><span class="pill pass">all pass</span></td></tr>
+    <tr><td>End-to-end in Chrome</td><td>New application with PDF upload; applicant → officer correction → different checker → approved; registration and watchlist re-screening; 14 screens at phone width without sideways scrolling.</td><td class="num">7</td><td><span class="pill pass">all pass</span></td></tr>
+    <tr><td>Static checks and builds</td><td>Strict TypeScript, ESLint, Prettier, production builds of both apps, Docker images.</td><td class="num">-</td><td><span class="pill pass">pass</span></td></tr>
+    <tr><td>Continuous integration</td><td>GitHub Actions on every push: all of the above against PostgreSQL, output validation, Chrome E2E.</td><td class="num">-</td><td><span class="pill pass">passed</span></td></tr>
+  </table>
+  <p class="small">GitHub Actions run 39941667580 on commit <span class="mono">2b52cdf</span>: install, full check against PostgreSQL, output validation and Chrome end-to-end all green.</p>
+
+  <div class="grid2 avoid">
+    <div class="card">
+      <h3 style="margin-top:0">Security tests</h3>
+      <ul class="small">
+        <li>No token → 401 on every protected route</li>
+        <li>Wrong role → 403; applicant on officer APIs → 403</li>
+        <li>Another applicant's case or document → 404, attempt audited</li>
+        <li>Maker cannot check own case → 403, even with both roles</li>
+        <li>Wrong state or lost race → 409; final statuses frozen</li>
+        <li>Masking of Aadhaar and PAN in lists, logs and exports</li>
+        <li>Prompt injection: document classified OTHER, no decision change</li>
+        <li>Uploads: size, type, encoding, binary content, scans, duplicates</li>
+        <li>Login lock-out with 429 after five failures; no user enumeration</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3 style="margin-top:0">Live checks with Groq</h3>
+      <ul class="small">
+        <li>PDF PAN card plus two .txt files uploaded through Docker: every field read correctly at 0.95–0.97 confidence; 3 documents in about 4 s</li>
+        <li>Rules gave REVIEW with only ADDRESS_PROOF_STALE: correct, the sample bill is older than 90 days</li>
+        <li>AI summaries for real in-review cases in about 2 s, all within 80 words and with values from the case</li>
+        <li>Applicant attempting a checker decision → 403; submitting twice → 409</li>
+      </ul>
+      <p class="small" style="margin:0">Spot checks, not an accuracy claim: evaluation figures are measured without an LLM.</p>
+    </div>
+  </div>
+
+  <h3>AI evaluation (sample set, against the truth file)</h3>
+  <table>
+    <tr><th>Metric</th><th class="num">Regex-only first version</th><th class="num">Our AI provider</th><th class="num">Target</th></tr>
+    <tr><td>Classification accuracy</td><td class="num">84.3%</td><td class="num">100.0%</td><td class="num">≥ 97%</td></tr>
+    <tr><td>Field exact match, all documents</td><td class="num">83.2%</td><td class="num">99.5%</td><td class="num">≥ 90%</td></tr>
+    <tr><td>Field exact match, poor scans</td><td class="num">56.9%</td><td class="num">93.1%</td><td class="num">-</td></tr>
+    <tr><td>PAN / Aadhaar-4 / DOB, clean scans</td><td class="num">100 / 100 / 100%</td><td class="num">100 / 100 / 100%</td><td class="num">≥ 98%</td></tr>
+    <tr><td>Precision of fields accepted at ≥ 0.80</td><td class="num">98.5%</td><td class="num">100.0%</td><td class="num">-</td></tr>
+  </table>
+  <p class="small">The extractor was developed on the sample documents, so these are development-set results. The evaluation set has no labels; we report agreement with the mock there, not accuracy.</p>
+</section>
+
+<!-- 6. Issues fixed -->
+<section class="page">
+  <div class="eyebrow">4 · Validation findings</div>
+  <h2>Issues our own checks found, and fixed</h2>
+  <p>We treated validation as a separate step: tests were written against the specification, and every failure was fixed in the code and re-run before moving on.</p>
+  <table>
+    <tr><th style="width:38%">Found</th><th>Fix</th></tr>
+    <tr><td>Three Compliance routes (re-screen, expire overdue, re-KYC due) lost in an edit</td><td>Caught by the full regression run; restored, tests pass</td></tr>
+    <tr><td>Design document, OpenAPI and diagrams missing (mandatory deliverable)</td><td>Generated from the code so they cannot drift; contract test checks every route</td></tr>
+    <tr><td>Supplied applications stayed "Submitted", so the dashboard showed 0% rates</td><td>Processing job (CLI, seed and a Maintenance button) plus a dashboard notice</td></tr>
+    <tr><td>Applicant registration and watchlist / configuration maintenance had no screens</td><td>Registration and Maintenance pages with tests</td></tr>
+    <tr><td>Rejected cases could not be found on screen</td><td>All applications page for Compliance Officers</td></tr>
+    <tr><td>Only .txt uploads</td><td>Text-based PDF upload; scans refused with a clear 422</td></tr>
+    <tr><td>Groq model name no longer served (HTTP 404)</td><td>Switched to <span class="mono">openai/gpt-oss-120b</span>; verified live</td></tr>
+    <tr><td>AI evaluation page 162 px wider than a phone screen</td><td>Found by the new responsive test; layout fixed; 14 screens now checked on every run</td></tr>
+    <tr><td>Design sources excluded from Git by an ignore rule</td><td>Found by a clean-clone build; rule fixed</td></tr>
+    <tr><td>Raw error text after refused actions</td><td>Clear 403 and 409 messages on every action screen</td></tr>
+  </table>
+
+  <h3 id="ci-section">Continuous integration</h3>
+  <p>GitHub Actions (<span class="mono">.github/workflows/ci.yml</span>) runs on every push and pull request: install, typecheck, lint, format, all 587 unit, integration and component tests against PostgreSQL, both builds, validation of the committed <span class="mono">/output</span> files and the 7 Chrome end-to-end tests. Run 39941667580 passed every step. A fresh clone with a clean install also passes the full check.</p>
+
+  <div class="eyebrow" style="margin-top:6mm">5 · Not built, and known limits</div>
+  <ul>
+    <li><b>Officer correction rate (AI-4):</b> corrections are stored as labelled feedback, but the supplied data has no officer feedback to compute a rate from.</li>
+    <li><b>LLM accuracy:</b> Groq is used live for summaries and optional extraction; we spot-checked it but report no LLM accuracy figure.</li>
+    <li><b>Scanned images and photos:</b> no OCR, because the Groq models available to us have no vision model. Text-based PDFs work.</li>
+    <li><b>Bonus ideas not built:</b> highlighting the exact text span of each field, mock CKYC search, multilingual or transliterated names.</li>
+    <li><b>Simulated by design (out of scope):</b> core banking, identity checks and watchlists are mocks with synthetic data. Performance figures come from one machine.</li>
+    <li><b>Our design choices:</b> revocable server-side sessions and scrypt instead of JWT and bcrypt; the source is in <span class="mono">backend/</span> and <span class="mono">frontend/</span> rather than <span class="mono">/code</span>.</li>
+  </ul>
+</section>
+
+<!-- 7. Run -->
+<section class="page">
+  <div class="eyebrow">6 · How to run it</div>
+  <h2>Run, test and regenerate</h2>
+  <div class="grid2">
+    <div class="card avoid">
+      <h3 style="margin-top:0">Start</h3>
+<pre class="mono" style="white-space:pre-wrap;margin:0">cp .env.example .env      # fill the change-me values
+npm run install:all
+npm run db:up && npm run db:migrate
+npm run db:seed           # data pack, demo users, processing
+npm run dev               # API :3000, UI :5173
+
+# or everything in Docker
+docker compose up --build # UI on http://localhost:8080</pre>
+    </div>
+    <div class="card avoid">
+      <h3 style="margin-top:0">Verify</h3>
+<pre class="mono" style="white-space:pre-wrap;margin:0">npm run check             # types, lint, format, tests, builds
+npm run e2e               # Chrome end-to-end (own database)
+npm run outputs -- --fresh-db
+npm run outputs:repeat    # determinism proof
+npm run perf              # performance report
+npm run design            # design docs and /prompt
+npm run batch             # decisions_output.csv</pre>
+    </div>
+  </div>
+  <h3>Demo accounts</h3>
+  <table>
+    <tr><th>Account</th><th>Role</th><th>Use it to</th></tr>
+    <tr><td class="mono">applicant1@onboardiq.test</td><td>Applicant</td><td>Apply, upload, track (owns sample A2000001)</td></tr>
+    <tr><td class="mono">officer1@onboardiq.test / officer2</td><td>KYC Officer (maker)</td><td>Review queue, corrections, recommendations</td></tr>
+    <tr><td class="mono">checker1@onboardiq.test / checker2</td><td>Compliance Officer (checker)</td><td>Checker queue, dashboard, audit, maintenance</td></tr>
+  </table>
+  <p class="small">The password is <span class="mono">SEED_DEMO_PASSWORD</span> from your <span class="mono">.env</span>. Optional LLM: set <span class="mono">GROQ_API_KEY</span>, <span class="mono">REVIEW_SUMMARY_LLM=groq</span> and, for extraction, <span class="mono">EXTRACTION_PROVIDER=ai</span> with <span class="mono">EXTRACTION_LLM=groq</span>.</p>
+  <h3>Where things are</h3>
+  <table>
+    <tr><th>Item</th><th>Location</th></tr>
+    <tr><td>Source code and tests</td><td class="mono">backend/, frontend/</td></tr>
+    <tr><td>Graded outputs</td><td class="mono">output/*.csv, output/evaluation_report.md, output/model_card.md</td></tr>
+    <tr><td>Design, API, diagrams</td><td class="mono">output/design/</td></tr>
+    <tr><td>QA evidence</td><td class="mono">output/qa_report.md, output/performance_report.md</td></tr>
+    <tr><td>LLM prompts</td><td class="mono">prompt/</td></tr>
+  </table>
+</section>
+
+</body>
+</html>

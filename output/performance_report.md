@@ -13,9 +13,9 @@ milliseconds on the machine below; a target is marked met only when the **maximu
 
 | Measurement | n | p50 | p95 | max | Target | Result |
 | --- | ---: | ---: | ---: | ---: | --- | --- |
-| One application through the API (`POST /submit`: extraction + rules R1-R17 + routing + audit, mock provider) | 158 | 17.0 | 18.6 | 24.4 | 2,000 ms | met (max within target) |
-| AI extraction per document, no LLM (all 474 supplied texts) | 474 | 10.6 | 15.4 | 18.5 | 1,000 ms | met (max within target) |
-| Batch: 100 evaluation applications, real command incl. process start (3 runs) | 3 | 149.4 | 174.6 | 174.6 | 60,000 ms | met (max within target) |
+| One application through the API (`POST /submit`: extraction + rules R1-R17 + routing + audit, mock provider) | 158 | 17.2 | 18.9 | 27.2 | 2,000 ms | met (max within target) |
+| AI extraction per document, no LLM (all 474 supplied texts) | 474 | 10.7 | 15.5 | 17.1 | 1,000 ms | met (max within target) |
+| Batch: 100 evaluation applications, real command incl. process start (3 runs) | 3 | 159.3 | 179.0 | 179.0 | 60,000 ms | met (max within target) |
 
 API run outcomes over 158 applications: AUTO_REJECTED 27, IN_REVIEW 54, PENDING_CHECKER 5, AUTO_APPROVED 72. Batch wrote 100 rows.
 
